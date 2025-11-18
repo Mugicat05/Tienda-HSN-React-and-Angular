@@ -12,7 +12,7 @@ module.exports = {
     );
     return token;
   },
-  //metodo para verificar un JWT y aprovechamos y le vamos a reutiliar para renovar
+  //metodo para verificar un JWT y aprovechamos y le vamos a reutiliar para renovar.
 verificarTokenYRenovar: (tokenAcceso, tokenRefresh) => {
     try {
       const payload = jwt.verify(tokenAcceso, process.env.FIRMA_JWT_SERVER);
