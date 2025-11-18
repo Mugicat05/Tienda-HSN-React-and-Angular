@@ -20,7 +20,10 @@ Incluye autenticación con **JWT (access y refresh tokens)**, integración con *
 - **Base de datos**: MongoDB
 - **Autenticación**: JWT (jsonwebtoken)
 
-## 📦 Instalación
-1. Clonar el repositorio:
-   ```bash
-   git clone https://github.com/tuusuario/nombre-repo.git
+## 🧩 Stack Tecnológico
+
+![Angular](https://seeklogo.com/images/A/angular-logo-2F7A3E2F6E-seeklogo.com.png)
+![Node.js](https://www.svgrepo.com/show/303360/nodejs-logo.svg)
+![MongoDB](https://seeklogo.com/images/M/mongodb-logo-4A71304B7E-seeklogo.com.png)
+![JWT](https://seeklogo.com/images/J/jwt-logo-65D86B4640-seeklogo.com.png)
+![Bootstrap](https://freebiesupply.com/wp-content/uploads/2021/10/bootstrap-logo.png)
