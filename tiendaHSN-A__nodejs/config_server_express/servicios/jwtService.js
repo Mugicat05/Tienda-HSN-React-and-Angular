@@ -8,7 +8,7 @@ module.exports = {
     const token = jwt.sign(
       payload, // <--- 1º parametro payload
       process.env.FIRMA_JWT_SERVER, // <--- 2º parametro clave secreta para cifrar y firmar el token
-      opcionesToken // <--- 3º parametro opciones del token (caducidad, algoritmo cifrado...)
+      opcionesToken // <--- 3º parametro opciones del token (caducidad, algoritmo cifrado...).
     );
     return token;
   },
