@@ -20,5 +20,4 @@ Incluye autenticación con **JWT (access y refresh tokens)**, integración con *
 - **Base de datos**: MongoDB
 - **Autenticación**: JWT (jsonwebtoken)
 
-- 
-![Angular](https://seeklogo.com/images/A/angular-logo-2F7A3E2F6E-seeklogo.com.png)
+![Node.js](https://www.svgrepo.com/show/303360/nodejs-logo.svg)
