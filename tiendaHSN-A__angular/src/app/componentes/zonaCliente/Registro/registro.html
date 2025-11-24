@@ -1,0 +1,200 @@
+<div class="container my-5">
+    <div class="row">
+    <!-- {/* Columna izquierda: introducción y redes sociales */} -->
+    <div class="col-lg-5 mb-4 mb-lg-0">
+        <h1 style='color: #e1522e' class="fw-bold mb-3">
+        Hola, ¿creamos tu cuenta?
+        </h1>
+        <p class="text-muted">
+        Estás a punto de crear tu cuenta en HSNstore con lo que conseguirás
+        acceder a promociones especiales, acumular puntos, y ahorrarte
+        dinero...
+        </p>
+        <p>
+        <a href="#" class="text-primary text-decoration-underline">
+            Uy, si yo ya tengo una cuenta creada.
+        </a>
+        </p>
+        <!-- Lista de ventajas -->
+        <div class="mb-3">
+        <!-- {[
+            "Accederás a promociones y descuentos antes que nadie.",
+            "Acumularás puntos = dinero para futuras compras.",
+            "Recibirás cupones, regalos sorpresa sólo para registrados.",
+            "Podrás invitar a tus amigos y conseguir 5€ en futuras compras.",
+            "Puedes cargar tus pedidos anteriores con un solo click.",
+            "Y mucho más...",
+        ].map((item, idx) => (
+            <p key={idx} class="mb-2 d-flex align-items-start">
+            <span
+                class="me-2"
+                style={{
+                color: "#e1522e",
+                fontSize: "1.1rem",
+                lineHeight: 1,
+                }}
+            >
+                ✔
+            </span>
+            <span>{item}</span>
+            </p>
+        ))} -->
+        </div>
+        <!-- Redes sociales -->
+        <div class="p-3" style="background-color: #f5f5f5;">
+        <h6 class="fw-bold text-uppercase mb-3">
+            Crea o accede con tus redes sociales
+        </h6>
+        <button
+            type="button"
+            class="btn w-100 mb-2 d-flex align-items-center border"
+            style='background-color: #fff; border-color: #dadce0;'
+        >
+            <img
+            src="https://developers.google.com/identity/images/g-logo.png"
+            alt="Google"
+            width="20"
+            height="20"
+            class="me-2"
+            />
+            <span class="flex-grow-1 text-center">
+            Continuar con Google
+            </span>
+        </button>
+        <button
+            type="button"
+            class="btn w-100 d-flex align-items-center border"
+            style='background-color: #fff; border-color: #dadce0;'
+        >
+            <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            fill="#1877F2"
+            class="me-2"
+            viewBox="0 0 16 16"
+            >
+            <path d="M12.73 2h-2.6C8.84 2 8.5 2.77 8.5 4v1H11l-.5 3H8.5v7H5.5V8H3.5V5h2v-.75C5.5 2.83 6.79 1 9.73 1H12v3z" />
+            </svg>
+            <span class="flex-grow-1 text-center">
+            Continuar con Facebook
+            </span>
+        </button>
+        </div>
+    </div>
+
+    <!-- Columna derecha: formulario de registro -->
+    <div class="col-lg-7">
+        <div class="border p-4">
+        <h2 class="h5 fw-bold mb-3">Datos de identificación de cuenta</h2>
+        <!-- Selector de tipo de cuenta -->
+        <div class="btn-group mb-2" role="group" aria-label="Tipo de cuenta">
+            <button
+            type="button"
+            class="btn"
+            style='border-color: #e1522e; color: #e1522e;font-weight: 600;'
+            >
+            Particular
+            </button>
+            <button
+            type="button"
+            class="btn"
+            style='border-color: #b0b0b0; color: #b0b0b0; font-weight: 600;'
+            disabled
+            >
+            Empresa
+            </button>
+        </div>
+        <p class="small text-danger">
+            * Atención: si eres autónomo o empresa y necesitas una factura
+            selecciona la opción EMPRESA.
+        </p>
+        <!-- 
+         Formulario reactivo interceptamos en tiempo real los cambios de los campos <input...> en el formGroup  
+         -->
+         {{ miform.value | json }}
+        <form class="needs-validation" [formGroup]="miform" (ngSubmit)="SubmitRegistro()">
+            @for( campo of [ 
+                { id:'nombre', tipo:'text' }, 
+                { id:'apellidos', tipo:'text' },
+                { id:'email', tipo:'email' },
+                { id:'password', tipo:'password' },
+                { id:'planAmigo', tipo:'text' }
+                 ]; track $index)
+            {
+              <div class="mb-3">
+                <label for="{{campo.id}}" class="form-label">
+                  {{campo.id}} <span class="text-danger">*</span>
+                </label>
+                <input type="{{campo.tipo}}" class="form-control" placeholder="Introduce tu {{campo.id}}" formControlName="{{campo.id}}" />
+                <!-- @if( miform.get(campo.id)?.dirty && miform.get(campo.id)?.invalid )
+                {
+                    <span class="text-danger">* {{campo}} invalido</span>
+                } -->
+                  @if( miform.get(campo.id)?.dirty && miform.get(campo.id)!.errors?.['required'] ){ <span class="text-danger">* {{campo.id}} requerido</span> }
+                  @if( miform.get(campo.id)?.dirty && miform.get(campo.id)!.errors?.['maxlength'] ){ <span class="text-danger">* {{campo.id}} num.maximo de caracteres sobrepasado {{miform.get(campo.id)!.errors?.['maxlength']?.requiredLength}}</span> }
+                  @if( miform.get(campo.id)?.dirty && miform.get(campo.id)!.errors?.['minlength'] ){ <span class="text-danger">* {{campo.id}} num.minimo de caractees requerido {{miform.get(campo.id)!.errors?.['minlength']?.requiredLength}}</span> }
+                  @if( miform.get(campo.id)?.dirty && miform.get(campo.id)!.errors?.['pattern'] ){ <span class="text-danger">* formato de {{campo.id}} incorrecto: 1 mays, 1 mins, 1 numero y un caracter especial en al menos 6 caracteres</span> }
+                  @if( miform.get(campo.id)?.dirty && miform.get(campo.id)!.errors?.['email'] ){ <span class="text-danger">* formato de {{campo.id}} incorrecto</span> }
+
+              </div>  
+            }
+
+            <div class="mb-3">
+            <label htmlFor="genero" class="form-label">
+                Género <span class="text-danger">*</span>
+            </label>
+            <select id="genero" class="form-select" formControlName="genero">
+                <option value="" disabled>
+                Selecciona un género
+                </option>
+                <option>Hombre</option>
+                <option>Mujer</option>
+                <option>No binario</option>
+                <option>Prefiero no decirlo</option>
+            </select>
+            <div class="invalid-feedback">
+                Selecciona una opción.
+            </div>
+            </div>
+            <!-- Promociones y privacidad -->
+            <h6 class="fw-bold">Enviar promociones especiales para clientes</h6>
+            <div class="form-check mb-2">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="promo"
+            />
+            <label class="form-check-label" for="promo">
+                Quiero recibir promociones exclusivas y contenidos personalizados
+            </label>
+            </div>
+            <div class="form-check mb-3">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="privacidad"
+                required
+            />
+            <label class="form-check-label" for="privacidad">
+                He leído y acepto la
+                <a href="#" class="text-primary text-decoration-underline">
+                Política de privacidad
+                </a>
+            </label>
+            <div class="invalid-feedback">
+                Debes aceptar la política de privacidad.
+            </div>
+            </div>
+            <!-- 
+             Botón de envío: DESHABILITADO POR DEFECTO!!! solo habilitar si el formulario es válido 
+             -->
+
+            <button type="submit" class="btn btn-success w-100">
+            REGISTRARME YA
+            </button>
+        </form>
+        </div>
+    </div>
+    </div>
+</div>
