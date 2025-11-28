@@ -15,7 +15,7 @@ objetoRoutingCliente.post('/Registro', async (req, res) => {
         //conectarnos a la base de datos y guardar los datos del cliente
         //const datos:IDatosRegistro=req.body;
         const { nombre, apellidos, genero, email, password, planAmigo } = req.body as IDatosRegistro;
-        await mongoose.connect(process.env.URL_MONGDOB!);
+        await mongoose.connect(process.env.URL_MONGODB!);
 
         const nuevoCliente=new Cliente(
             {

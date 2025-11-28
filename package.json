@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@angular/router": "^21.0.1",
+    "rxjs": "^7.8.2"
+  }
+}
