@@ -3,11 +3,21 @@ import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 const STORAGE_KEY = 'httpRequestCache_v1';
+//prompt original:
+/*
+Genera un interceptor de angular dentro de #file:cache-requests-interceptor.ts  con este objetivo:
+ - detectar en parametro HttpRequest si la url ha sido ya solicitada con anteriodad o no, si es asi, evitar hacer la peticion con next(req) y devolver el valor almacenado
+ Directrices de codigo:
+  - para el alamcenamiento de peticiones en memoria usar un objeto Map con clave string la url solicitada y valor la peticion devuelta
+  - ante la posible perdidad de datos por refresh almacenar este objeto Map en el localstorage del navegador. Tenerlo en cuenta cuando se intente recuperar algun valor de la cache.
+
+  antes de hacer cualquier cambio, solicitar permiso
+*/
 
 //mejoras a implementar en el interceptor de cache:
 // - limitar el tamaño maximo de la cache (numero maximo de entradas o tamaño en bytes)
 // - implementar un sistema de expiracion de entradas en la cache (tiempo maximo de vida de una entrada)
-// - implementar un sistema de invalidacion de la cache (borrar entradas cuando se hacen peticiones POST/PUT/DELETE) 
+// - implementar un sistema de invalidacion de la cache (borrar entradas cuando se hacen peticiones POST/PUT/DELETE)
 
 
 type StoredResponse = {
@@ -101,4 +111,4 @@ export const cacheRequestsInterceptor: HttpInterceptorFn = (req, next) => {
       }
     })
   );
-}; 
+};

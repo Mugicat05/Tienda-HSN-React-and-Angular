@@ -1,0 +1,102 @@
+----------------------------------------------------------
+comunicacion entre componentes angular
+----------------------------------------------------------
+2 casos:
+
+	1º) relacion parental directa  (en el comp.padre, en su vista hay selectores de comp.hijos)
+
+		padre ---> hijo:  
+
+			- en el componente hijo se te defines props. con la funcion "input" de esta forma:
+			esta funcion, lo q hace es crear una señal del tipo InputSignal<tipo> (con versiones de angular
+			anteriores a la 18 se usaba el decorador @Input() prop:tipo=valor;)
+
+				public prop1=input<tipo>(valor_inicial);
+				public prop2=input<tipo>(valor_inicial);
+
+			para recuperar el valor pasado atraves de estas señales desde el comp.padre, usas esta notacion:
+
+				prop1(); <---- se recupera el valor almacenado en señal input prop1
+				prop2(); <---- se recupera el valor almacenado en señal input prop2
+
+		- en el comp.padre, en la vista del componente donde esta el selector del comp.hijo se pasan valores a esas 
+		señales usando la notacion: [ prop ]= "valor"
+
+			<app-comp-hijo [prop1]="valor_Variable_comp_padre"  [prop2]="valor"
+
+ej: comp. LibretaDirecciones.component.ts usa componente hijo: MiniDireccion.component.ts
+   	-en comp.hijo MiniDireccion defines prop.input de entrada:
+		
+		public direccionAPintar=input<IDireccion|null>(null);
+		...
+		ngOnInit {
+			console.log('direccion a pintar pasada desde comp.padre...', this.direccionAPintar() );
+		}
+	en la vista del comp.MiniDireccion.comp.html: 
+
+			<div>
+				<p> Calle:  {{ this.direccionAPintar().calle }} </p>
+				<p> Municipio: {{ this.direccionAPintar().municipio.DMUN50 }} </p>
+				...
+	-en comp.padre LibretaDirecciones.component.html, en selector del comp.hijo:
+		@let direcPpal=this.cliente().direcciones.find( (d:IDireccion)=> d.esPrincipal==true );
+		<app-mini-direccion  [direccionAPintar]="direcPpal"  />
+-------------------------------------
+
+padre <--- hijo: 
+	- en el comp. hijo te defines propiedades con la funcion "output",  devuelve una señal q enmascara un observable de
+	eventos con el tipo de valor a devolver por la señal (en las versiones antiguas se usaba el decorador:
+		@Output() nombre_var: EventEmitter<tipo>=new EventEmitter<tipo>(valor_inicial)
+
+	ahora es mas sencillo:
+
+		public nombre_prop=output<tipo>(valor_inicial);
+
+
+	cuando el comp.hijo quiere pasar un valor al comp.padre, en el codigo del hijo:
+
+		nombre_prop.emit(valor)
+			
+
+	- en el comp.padre, en su vista,  en el selector del comp.hijo pones a la escucha de los eventos emitidos por el hijo
+	y defines el handler o funcion manejadora (intercepta) del evento disparado por el hijo:
+
+		<app-selector-hijo (nombre_prop)="nombre_Funcion_Handler($event)"  ... />
+
+	en el codigo del comp. padre:
+	
+		nombre_Funcion_Handler(dato: tipo){
+			//en parametro "dato" esta el valor pasado por el comp.hijo atraves del evento output
+		}
+---------------------------
+ej: comp. LibretaDirecciones.component.ts usa componente hijo: MiniDireccion.component.ts, quiero implementar el ELIMINAR DIRECCION
+   	-en comp.hijo MiniDireccion defines prop.output de salida:
+		
+		public direccionAPintar=input<IDireccion|null>(null);
+		public direccionAEliminar=output<IDireccion|null>(null);
+		...
+
+		HandlerEliminarClick(){
+			this.direccionAEliminar.emit(  this.direccionAPintar()  )
+		}
+
+				...
+	-en comp.padre LibretaDirecciones.component.html, en selector del comp.hijo pongo a la escucha del evento output y defino handler:
+
+		@let direcPpal=this.cliente().direcciones.find( (d:IDireccion)=> d.esPrincipal==true );
+		<app-mini-direccion  [direccionAPintar]="direcPpal" (direccionAEliminar)="BorrarDireccion($event)"  />
+
+	en el codigo del comp.padre:
+
+	BorrarDireccion(direc: IDireccion){
+			//hacer pet. a node para borrar direccion de bd, refrescar datos del cliente <--- se refrescara vista
+	}
+
+===============================================
+2º) NO EXISTE RELACION PARENTAL directa entre componentes: necesitas definir el state-global de la aplicacion (especie de almacen de datos donde todos los componentes pueden acceder
+a el), en angular se hace creando un SERVICIO que almacena en memoria los valores q me interesa q compartan los componentes:
+		- en versiones antiguas de angular anteriores a la 19, se usan dentro del servicio de forma privada observables de lectura/escritura: SUBJECTS <--- BEHAVIOURSUBJECT
+		- en verisones recientes de angular, SIGNALS o señales
+
+OJO!!! si solo usas este tipo de variables, si hay REFRESH de pag. se pierde toda la info, hay q apoyarse en el storage del navegador
+

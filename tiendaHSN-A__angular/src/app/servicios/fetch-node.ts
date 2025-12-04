@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import IRespuestaNode from '../modelos/IRespuestaNode';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, startWith } from 'rxjs';
 
 //---si definees todas las interfaces en un solo archivo: 
 //import { IRespuestaNode, IFormRegistro } from '../modelos/Interfaces';
@@ -91,4 +91,12 @@ export class FetchNode {
                   );
   }  
 
+  public GetCategorias( pathCategoria:string = 'principales'): Observable<IRespuestaNode> {
+    const url = `http://localhost:3000/api/Tienda/Categorias?pathCat=${pathCategoria}`;
+    return this.http
+          .get<IRespuestaNode>(url, { headers: { 'Content-Type': 'application/json' } })
+          .pipe(
+            startWith({ codigo: 100, mensaje: 'Esperando respuesta server...' }),
+          );
+  }
 }

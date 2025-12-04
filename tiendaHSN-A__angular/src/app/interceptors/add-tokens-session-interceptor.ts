@@ -1,10 +1,4 @@
-import {
-  HttpEvent,
-  HttpEventType,
-  HttpHandlerFn,
-  HttpInterceptorFn,
-  HttpRequest,
-} from '@angular/common/http';
+import { HttpEvent, HttpEventType, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { map, Observable, tap } from 'rxjs';
 import IRespuestaNode from '../modelos/IRespuestaNode';
 
@@ -22,30 +16,25 @@ import IRespuestaNode from '../modelos/IRespuestaNode';
 //                          de datos, esta funcion devuelve un Observable<HttpEvent<any>> que emite los diferentes eventos de la respuesta HTTP
 
 // la funcion del interceptor debe devolver un Observable<HttpEvent<any>>, de eventos de procesamiento de la respuesta
-export const addTokensSessionInterceptor: HttpInterceptorFn = (
-  req: HttpRequest<any>,
-  next: HttpHandlerFn
-): Observable<HttpEvent<any>> => {
-  console.log(
-    'INTERCEPOR ADD TOKENS SESSION - antes de enviar la peticion HTTP al servidor, valor de req:',
-    req
-  );
-  const accessToken = ''; // aqui iria el codigo para obtener el acces token de la sesion del servicio almacenamiento global
-  const refreshToken = ''; // aqui iria el codigo para obtener el refresh token de la sesion del servicio almacenamiento global
-  if (accessToken && refreshToken) {
-    //si tenemos tokens de inicio sesion, lo añadimos a la cabecera de la peticion HTTP
-    req = req.clone({
+export const addTokensSessionInterceptor: HttpInterceptorFn = (req:HttpRequest<any>, next:HttpHandlerFn): Observable<HttpEvent<any>> => {
+  
+  console.log('INTERCEPOR ADD TOKENS SESSION - antes de enviar la peticion HTTP al servidor, valor de req:', req);
+  
+  const accessToken =''; //aqui iria el codigo para obtener el access token de la sesion del servicio almacenamiento global
+  const refreshToken =''; //aqui iria el codigo para obtener el refresh token de la sesion del servicio almacenamiento global
+  if( accessToken && refreshToken ){
+    //si tenemos tokens de sesion, los añadimos a la cabecera de la peticion HTTP
+    req = req.clone( {
       headers: req.headers
-
-        .set('Authorization', `Bearer ${accessToken}`)
-        .set('X-Refresh-Token', refreshToken),
-    });
+                .set('Authorization', `Bearer ${accessToken}` )
+                .set('X-Refresh-Token', refreshToken )
+    } );
   }
-
+ 
   //mostramos los eventos de la respuesta HTTP que se reciben en el interceptor o bien desde el servidor o bien desde el siguiente interceptor:
-
+  
   //esto KASKA!!! yo no puedo devolver un objeto Subscription desde aqui q es lo que hacemos al intentar "pinchar" el observable con el metodo subscribe
-  // para ver sus valores:
+  // para ver sus valores: 
   //return next(req).subscribe( (ev: HttpEvent<any>) => console.log('INTERCEPTOR ADD TOKENS SESSION - evento de respuesta HTTP recibido:', ev) );
 
   //para hacerlo tengo q usar los operadores de RXJS para manipular los observables para manipular los datos q van por el observable
@@ -53,9 +42,7 @@ export const addTokensSessionInterceptor: HttpInterceptorFn = (
   //y dentro del metodo usas los operadores de RXJS que quieras utillizar para manipular los datos del observable
   return next(req).pipe(
     //tap <---- operardor de RXJS q recoge el valor del observable, ejecuta la funcion q tiene dentro y lo devuelve sin modificar
-    tap((ev: HttpEvent<any>) =>
-      console.log('INTERCEPTOR ADD TOKENS SESSION - evento de respuesta HTTP recibido:', ev)
-    )
+    tap( (ev:HttpEvent<any>) => console.log('INTERCEPTOR ADD TOKENS SESSION - evento de respuesta HTTP recibido:', ev) ),
     //map <---- operador de RXJS q recoge el valor del observable, ejecuta la funcion q tiene dentro para modificarlo y lo devuelve modificado
     // map( (ev:HttpEvent<any>) => {
     //   //aqui puedes modificar el evento de respuesta HTTP si quieres
@@ -63,8 +50,7 @@ export const addTokensSessionInterceptor: HttpInterceptorFn = (
     //                                             //en el body del evento esta la respuesta HTTP completa y tiene el formato:
     //                                             //IRespuestaNode
     //     //el evento es de respuesta, puedes modificar el cuerpo de la respuesta si quieres
-    //
-    //ev.body <---- aqui tienes el cuerpo de la respuesta HTTP
+    //     //ev.body <---- aqui tienes el cuerpo de la respuesta HTTP
     //     console.log('INTERCEPTOR ADD TOKENS SESSION - evento de respuesta HTTP es de tipo RESPONSE, cuerpo de la respuesta:', ev.body );
     //     const { codigo, mensaje, datos } = ev.body as IRespuestaNode;
     //     ev = ev.clone( { body: datos } );
@@ -77,5 +63,5 @@ export const addTokensSessionInterceptor: HttpInterceptorFn = (
     //switchMap
     //mergeMap
     //concatMap
-  );
+)
 };

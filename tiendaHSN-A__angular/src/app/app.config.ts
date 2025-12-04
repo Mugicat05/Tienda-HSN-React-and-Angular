@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 
 import { misRutas } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { addTokensSessionInterceptor } from './interceptors/add-token-session-interceptor';
+import { addTokensSessionInterceptor } from './interceptors/add-tokens-session-interceptor';
 import { cacheRequestsInterceptor } from './interceptors/cache-requests-interceptor';
 
 //modulo de codigo donde se configura la inyeccion de dependencias
@@ -16,6 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(misRutas), //<---- configuracion del servicio de enrutamiento en el modulo de inyeccion de dependencias
-    provideHttpClient(withInterceptors([cacheRequestsInterceptor,addTokensSessionInterceptor])) //<------ configuracion del servicio HttpClient para hacer peticiones HTTP al servidor de nodejs
+    provideHttpClient( withInterceptors([cacheRequestsInterceptor, addTokensSessionInterceptor])) //<------ configuracion del servicio HttpClient para hacer peticiones HTTP al servidor de nodejs, configuramos los INTERCEPTORS
   ]
 };

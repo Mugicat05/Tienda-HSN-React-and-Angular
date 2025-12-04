@@ -47,7 +47,22 @@
           <div>
             <div class="container">
               <ul id="catsppales" class="nav d-flex align-items-center overflow-auto" style="white-space: 'nowrap';">
-
+                @let categoriasPrincipales = categoriasPrincipales$ | async;
+                @if(  categoriasPrincipales.length === 0 )  
+                {
+                  <li class="nav-item px-3 py-2 text-danger">Error cargando categorías</li>
+                }
+                @else
+                {
+                  @for ( cat of categoriasPrincipales; track $index) 
+                  {
+                    <li class="nav-item p-2">
+                      <a  [href]="'/Tienda/Productos/' + cat.pathCategoria">
+                        <span class="catsppales">{{cat.nombreCategoria}} <i class='fas fa-chevron-down'></i></span>   
+                      </a>
+                    </li>
+                  }
+                }
 
               </ul>
             </div>
