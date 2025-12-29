@@ -1,6 +1,7 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import ICliente from '../modelos/interfaces_ORM/ICliente';
 import IJwtTokens from '../modelos/IJwtTokens';
+import IPedido from '../modelos/interfaces_ORM/IPedido';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,9 @@ export class StorageGlobal {
   //lo hacemos con señales para versiones actuales de Angular, antiguas usaban BehaviorSubject
   private _cliente:WritableSignal<ICliente|null> = signal<ICliente|null>(null);
   private _tokens: WritableSignal<IJwtTokens | null> = signal<IJwtTokens | null>(null);
+
+  private _inicioCarrito:IPedido={ itemsPedido:[], subtotal:0, gastosEnvio:0, total:0 };
+  private _carrito:WritableSignal<IPedido>=signal<IPedido>(this._inicioCarrito); // <---- señal para almacenar el pedido/carrito actual
 
   //#region ------ metodos para manipular los datos del alamacenamiento global ------
   GetDatosCliente(): WritableSignal<ICliente | null> {
@@ -65,5 +69,57 @@ export class StorageGlobal {
       localStorage.removeItem('tokens');
     }
   }
+
+  GetCarrito(): WritableSignal<IPedido> {
+    //si no hay carrito en la señal, puede ser por refresh de pagina, lo recupero del localStorage
+    if (this._carrito() == null) {
+      const carrito = JSON.parse(localStorage.getItem('carrito') || 'null');
+      this._carrito.set(carrito);
+    }
+    return this._carrito;
+  }
+
+  EstablecerItemsCarrito( operacion:string, item:{producto:any, cantidad:number} ): void {
+    //operacion puede ser 'add' para añadir item al carrito o 'remove' para eliminar item del carrito y 'modify' para modidicar cantidad
+    const posItem= this._carrito().itemsPedido.findIndex( it => it.producto._id === item.producto._id );
+    let itemsPedidoActual= this._carrito().itemsPedido;
+
+    switch(operacion){
+      case 'add':
+        posItem == -1 ? itemsPedidoActual.push(item) : itemsPedidoActual[posItem].cantidad += item.cantidad;  
+        break;
+      
+      case 'modify':
+        if(posItem !== -1){
+          itemsPedidoActual[posItem].cantidad = item.cantidad;
+        }
+        break;
+
+      case 'remove':
+        if(posItem !== -1){
+          itemsPedidoActual=itemsPedidoActual.filter( i => i.producto._id !== item.producto._id );
+          //itemsPedidoActual.splice(posItem, 1);
+        }
+        break;
+    }
+    //recalculo subtotal, gastos de envio y total
+    const _Subtotal= itemsPedidoActual.reduce( (acum, it) => acum + ( it.producto.Precio * (1 - it.producto.Oferta/100) * it.cantidad), 0 );
+    const _total=_Subtotal + this._carrito().gastosEnvio;
+
+    //actualizo la señal del carrito, para hacerlo usas metodos o .set() <---- necesitas pasar un nuevo objeto
+    //  o .update() <------ pasas una funcion q recibe el valor antiguo y devuelve el nuevo
+    this._carrito.set( 
+                      { 
+                        ...this._carrito(),
+                        itemsPedido: itemsPedidoActual, 
+                        subtotal: _Subtotal, 
+                        total: _total 
+                    }
+   );
+   //almaceno tambien en localStorage para persistencia ante refresh de pagina
+   localStorage.setItem('carrito', JSON.stringify( this._carrito() ) );
+
+  }
+
   //#endregion
 }

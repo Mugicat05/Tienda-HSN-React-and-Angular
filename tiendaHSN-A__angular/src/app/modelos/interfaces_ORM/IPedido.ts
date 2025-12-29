@@ -4,17 +4,17 @@ import IDireccion from "./IDireccion";
 export default interface Pedido {
     itemsPedido:          Array<{producto:IProducto, cantidad:number}>;
     codigoDescuento?:     any[];
-    metodoPago:           IMetodoPago;
-    metodoEnvio:          IMetodoEnvio;
-    fechaPago:            null;
+    metodoPago?:           IMetodoPago;
+    metodoEnvio?:          IMetodoEnvio;
+    fechaPago?:            null;
     fechaEnvio?:          null;
-    estado:               string;
-    direccionEnvio:       IDireccion;
-    direccionFacturacion: IDireccion;
+    estado?:               string;
+    direccionEnvio?:       IDireccion;
+    direccionFacturacion?: IDireccion;
     subtotal:             number;
     gastosEnvio:          number;
     total:                number;
-    _id:                  string;
+    _id?:                  string;
 }
 
 export interface IMetodoEnvio {
