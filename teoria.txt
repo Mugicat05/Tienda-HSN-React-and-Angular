@@ -100,3 +100,203 @@ a el), en angular se hace creando un SERVICIO que almacena en memoria los valore
 
 OJO!!! si solo usas este tipo de variables, si hay REFRESH de pag. se pierde toda la info, hay q apoyarse en el storage del navegador
 
+
+
+
+
+-- ---------------------------------------
+-- --		DIRECTIVAS ANGULAR	--
+-- ---------------------------------------
+https://angular.dev/guide/directives
+siempre se usan en las vistas de los componentes y actúan sobre los elementos del DOM de los mismos, y sirven para cambiar el comportamiento de dicho elemento sobre el que se aplican.
+son objetos derivados de clases typescript de angular q tienen el decorador  @Directive, y el "selector" seria el atributo que se pone en el elemento sobre el que se aplican
+		
+		@Directive( { selector: '...selector elemento...'})
+		export class nombre_directiva {
+			...
+		}
+
+
+hay 2 tipos:
+----------------------
+	- DIRECTIVAS DE ATRIBUTO:
+	  https://angular.dev/guide/directives/attribute-directives
+	 sirven para cambiar la apariencia (estilos y clases css) o el comportamiento del elemento del DOM sobre el que se aplican
+
+		Angular tiene directivas de atributo predefinidas: NgClass, NgStyle, NgModel
+
+			NgClass <--- la importas en sección imports del componente y sirve para cambiar clase(s)
+					css q se aplican a un elemento del DOM de la vista del componente
+					Para usarla:
+
+					<elemento [ngClass]="valores_clases" ....>
+							    ----------------
+								\---> - string (como el nombre de una clase) o una
+									variable del componente q almacene el string
+									con el nombre de la clase
+								      - un array de strings (conjunto de clases q
+									quieres aplicar) o una variable q contenga
+									ese array de strings
+								      - un objeto, con props nombres de clase css
+									y valores una expresión boolean q cuando
+									se evalúa a "true" se aplica esa clase si es
+									"false" no se aplica la clase
+ej:
+	<button [ngClass]='btn'>mi boton</button>
+	<button [ngClass]='["btn","btn-primary"]'>mi boton</button>						
+	<button [ngClass]='{ "btn": true, "btn-primary": clienteIsLogged() }'>mi boton</button>
+
+
+
+			NgStyle <-- la importas en sección imports del componente y sirve para establecer ESTILOS CSS
+				   concretos q se pueden aplicar al elemento del DOM de la vista del componente 
+				   Para usarla:
+			
+				<elemento [ngStyle]='valor_css' ...>
+						    ----------
+							\--> 'nombre_estilo': valor 
+								en valor le puedes pasar o bien un string o una
+								expresión q aplique un valor de estilo diferente en
+								función de ese valor:
+		<input type="file" [ngStyle]=" 'visibility': isClienteLogged() ? 'hidden' : 'visible' "
+
+
+								      - un objeto, con props nombres de estilo css
+									y valores una expresión boolean q cuando
+									se evalúa a "true" se aplica esa clase si es
+									"false" no se aplica la clase							
+
+
+		<input type="file" [ngStyle]=" { 'visibility': isClienteLogged() ? 'hidden' : 'visible', 
+						  'color': perfilUsuario==='admin' ? 'red': 'blue' 
+						}  " ...>
+
+----------------------
+	- DIRECTIVAS ESTRUCTURALES:
+	  https://angular.dev/guide/directives/structural-directives
+ 	  son directivas que alteran el DOM de la vista del componente, mostrando u ocultando elementos, creando elementos, etc...
+	  en las versiones mas actuales de angular se han sustituido por:
+		
+		*ngIf="condicion" ------------> @if(condicion){}
+		*ngIf="condición; else …" ----> @if(condcion){} @else{}
+		*ngFor -----------------------> @for(){}
+
+
+	¿¿pq el *?? en angular solo se emplea este caracter en estas directivas, en ningun otro sitio
+		pues pq lo q hace realmente es crear un elemento <ng-template directiva-estructural … ></ng-template>
+		que envuelve al elemento del DOM sobre el q se aplica la directiva
+
+			el poner:
+				<div *ngIf="!onlyOdd">
+				...
+			es como poner:
+		
+				<ng-template [ngIf]="!onlyOdd">
+				  <div>
+					<li
+					  class="list-group-item"
+					  [ngClass]="{impar: even % 2 !== 0}"
+					  [ngStyle]="{backgroundColor: even % 2 !== 0 ? 'yellow' : 'transparent'}"
+					  *ngFor="let even of evenNumbers">
+					  {{ even }}
+					</li>
+				  </div>
+				</ng-template>
+				
+
+		otro ejemplo, el poner:
+
+			<select name="provincia">
+				<option *ngFor="let provin of provincias(); index">{{provin.PRO}}</option>
+			</select>
+
+		es como poner:
+	
+			<select name="provincia">
+				<ng-template ngFor let-provin [ngForOf]="provincias()">
+					<option> {{provin.PRO}} </option>
+				</ng-template>
+
+	ESTAN EN DESUSO...
+
+----------------------------
+DIRECTIVAS PERSONALIZADAS
+----------------------------
+ para crearte cualquier tipo de directiva:
+
+		ng generate directive nombre_directiva [--opciones]
+
+y puedes usar para cambiar el comportamiento del elemento sobre el que se aplica dos maneras:
+
+	- inyectando en constructor de la directiva el elemento sobre el q se aplica:
+
+		constructor(private elem:ElementRef){} <----- en la propiedad .nativeElement tienes el HTMLElement sobre el q se aplica
+								y ya puedes cambiar cualquier atributo del mismo
+					
+	- usando decoradores en código de la directiva: @HostBinding y @HostListener
+
+			@HostBinding('class.nombre_clase_css') nombre_variable="valor_clase_inicial' <---- sirve para cambiar estilos/clases css  en función de codigo
+
+			@HostListener('nombre_evento_interceptar',[array de parametros a pasar a handler]) nombre_funcion_handler(arg1, arg2, ...){ <---- sirve para interceptar eventos del elemento
+				//código q se ejecuta cuando directiva intercepta el evento sobre ese elemento						sobre el q se aplica la directiva
+			}
+			
+
+
+
+
+
+
+DEL PROFE: 
+
+DIRECTIVAS DE ANGULAR <====== solo se emplean en las vistas de componentes, dentro de los elementos del DOM de la vista, como atributos
+---------------------------------------
+son objetos creados a partir de clases q tienen decorador @Directive y q permiten la modificacion de su aspecto o comportamiento habitual
+
+
+	@Directive(
+		{
+			selector:"nombre_atributo"
+		}
+	) export class NombreClaseDirectiva {
+		...
+	}
+
+
+
+en angular hay dos tipos de directivas:
+
+	- directivas de atributo o directivas de estilo: permiten modificar estilos/clases css en funcion de determinadas condiciones que se den sobre el elemento q se aplica la directiva
+	o expresión angular evaluada en el componente donde esta el elemento:
+		NgStyle<--- cambia, establece un estilo css acorde a una expresión boolean evaluable
+		NgClass<--- cambia toda una clase css acorde a una expreson boolean evaluable
+
+	se usarían asi: (se deben importar en el componente q las va a usar en su vista, en sección imports: [NgStyle, NgClass] y en la vista, en el elemento del DOM q quieres modificar aspecto
+		<elemento [ngStyle]="estilo-css: expresion_a_evaluar" .../>
+		<elemento [ngClass]="{ nombre_clase: expresion_a_evaluar, nombre_clase2:expresion_a_evaluar} "
+
+
+	otra directiva de atributo predefinida en angular:
+
+		NgModel <------- directiva q modifica el comportamiento habitual de un elemento<input de un formulario pq mapea su "value" contra una propiedad de un objeto modelo
+			y además mapea su evento onChange con esa propiedad del modelo
+			
+			<input[(ngModel)}="nombre_prop_modelo" <------- [ngModel]="nombre_prop_modelo"(se recoge como valor de entrada en la directiva el valor de la prop. modelo
+										mapea la propiedad "value" del <input contra la pipiedad del modelo
+									(ngModelChange)="nombre_prop_modelo"(cada vez q se dispara el evento onchange sobre el input se actualiza
+											"value" del <input y con ello, la propiedad del modelo
+
+	- directiva estructurales: son directivas q lo q hacen es alterar el DOM de la vista del componente (ocultan/muestran elementos en ejecución)
+		<elemento *nglf="condicion"...> ---------> @if(condición) {<elemento...> }
+		<elemento *nglf="condición; else #nombre_fragmento" ----- @if(condición){...} @else {...}
+		<elemento *ngFor="let var of array;"..> ------------------------ @for(var of array; track){...}    ¡¡¡OJJOOO!!! NO UTILIZAR EL METODO ANTIGUO(*nglf-*ngFor)
+
+DIRECTIVAS PERSONALIZADAS:
+----------------------------
+ng generate directive drag-and-drop --flat --skip-tests
+
+- admite la inyección de una referencia al elemento del DOM sobre el q se aplica
+- admite propiedades de entrada ("input") y propiedades de tipo EventEmitter, puede disparar evento personalizados ("output")
+- admite la intercepción de los eventos del propio elemento sobre el q se aplica la directiva: 
+
+20:1

@@ -1,7 +1,7 @@
 import IProducto from "./IProducto";
 import IDireccion from "./IDireccion";
 
-export default interface Pedido {
+export default interface IPedido {
     itemsPedido:          Array<{producto:IProducto, cantidad:number}>;
     codigoDescuento?:     any[];
     metodoPago?:           IMetodoPago;

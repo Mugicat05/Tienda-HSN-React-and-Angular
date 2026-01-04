@@ -72,7 +72,7 @@ export class StorageGlobal {
 
   GetCarrito(): WritableSignal<IPedido> {
     //si no hay carrito en la señal, puede ser por refresh de pagina, lo recupero del localStorage
-    if (this._carrito() == null) {
+    if (this._carrito().itemsPedido.length === 0) {
       const carrito = JSON.parse(localStorage.getItem('carrito') || 'null');
       this._carrito.set(carrito);
     }
